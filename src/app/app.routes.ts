@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
+import { RouterModule, Routes, CanActivate } from '@angular/router';
 import { LoginComponent } from './auth/login/login.component';
 import { RegisterComponent } from './auth/register/register.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { dashRoutes } from './dashboard/dash.routes';
+import { AuthGuardService } from './auth/auth-guard.service';
 
 const routes: Routes = [
     { path: 'register', component: RegisterComponent },
@@ -11,7 +12,8 @@ const routes: Routes = [
     {
         path: '',
         component: DashboardComponent,
-        children: dashRoutes
+        children: dashRoutes,
+        canActivate: [AuthGuardService]
     },
     { path: '**', component: DashboardComponent },
 ];
