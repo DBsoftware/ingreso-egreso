@@ -9,25 +9,39 @@ import swal from 'sweetalert2';
 import { map } from 'rxjs/operators';
 import { User } from './user.model';
 
+import { Store } from '@ngrx/store';
+import { AppState } from '../app.reducer';
+import { ActivarLoadingAction, DesactivarLoadingAction} from '../shared/ui.actions';
+import { SetUserAction, UnsetUserAction } from './auth.actions';
+import { Subscription } from 'rxjs';
+
+
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
-
-  constructor(
-    public afAuth: AngularFireAuth,
-    public afDB: AngularFirestore,
-    private router: Router
-  ) { }
+  private userSubs: Subscription = new Subscription();
+  constructor(public afAuth: AngularFireAuth,
+              public afDB: AngularFirestore,
+              public store: Store<AppState>,
+              private router: Router
+              ) { }
 
   initAuth_Listener() {
     this.afAuth.authState.subscribe((fbUser: fire.User) => {
-      console.log(fbUser);
+      if (fbUser) {
+        this.userSubs ?
+        this.afDB.doc(`${fbUser.uid}/usuario/`).valueChanges()
+          .subscribe( userObj => this.store.dispatch( new SetUserAction( new User(userObj) ) ) )
+        :
+          this.userSubs.unsubscribe();
+      }
     });
   }
 
   crear_usuario( nombre, email, pass) {
+    this.store.dispatch( new ActivarLoadingAction() );
     this.afAuth.auth.createUserWithEmailAndPassword(email, pass)
     .then(r => {
       const user: User = {
@@ -37,17 +51,32 @@ export class AuthService {
       };
       this.afDB.doc(`${user.uid}/usuario`)
       .set(user)
-      .then(() => this.router.navigate(['/']));
+      .then(() => {
+        this.router.navigate(['/']);
+        this.store.dispatch( new DesactivarLoadingAction() );
+      } );
     },
-    err =>  swal('Error en el registro', err.message, 'error'));
+    err =>  {
+      this.store.dispatch( new DesactivarLoadingAction() );
+      swal('Error en el registro', err.message, 'error');
+    });
   }
 
   login(email: string, pass: string) {
+    this.store.dispatch( new ActivarLoadingAction() );
     this.afAuth.auth.signInWithEmailAndPassword(email, pass)
-    .then(r => this.router.navigate(['/']), err => swal('Error en el login', err.message, 'error'));
+    .then(r => {
+      this.store.dispatch( new DesactivarLoadingAction() );
+      this.router.navigate(['/']);
+    },
+    err => {
+      this.store.dispatch( new DesactivarLoadingAction() );
+      swal('Error en el login', err.message, 'error');
+    });
   }
 
   logOut() {
+    this.store.dispatch( new UnsetUserAction() );
     this.router.navigate(['/login']);
     this.afAuth.auth.signOut();
   }
