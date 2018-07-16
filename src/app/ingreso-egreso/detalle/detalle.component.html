@@ -15,11 +15,16 @@
                     </thead>
 
                     <tbody>
-                        <tr>
-                            <td>Descripción</td>
-                            <td>Monto</td>
-                            <td>Tipo</td>
-                            <td>acciones</td>
+                        <tr *ngFor="let item of items | ordenar">
+                            <td>{{item.descripcion}}</td>
+                            <td>{{item.monto | currency}}</td>
+                            <td><span [ngClass]="{
+                                'text-success': item.tipo == 'ingreso',
+                                'text-danger': item.tipo == 'egreso'
+                            }">{{item.tipo | uppercase}}</span></td>
+                            <td>
+                                <button (click)="borrar(item)" class="btn btn-danger text-white"><i class="fa fa-trash"></i>Borrar</button>
+                            </td>
                         </tr>
                     </tbody>
 

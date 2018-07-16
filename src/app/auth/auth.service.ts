@@ -14,6 +14,7 @@ import { AppState } from '../app.reducer';
 import { ActivarLoadingAction, DesactivarLoadingAction} from '../shared/ui.actions';
 import { SetUserAction, UnsetUserAction } from './auth.actions';
 import { Subscription } from 'rxjs';
+import { UnsetItemsAction } from '../ingreso-egreso/ingreso-egreso.action';
 
 
 
@@ -22,6 +23,7 @@ import { Subscription } from 'rxjs';
 })
 export class AuthService {
   private userSubs: Subscription = new Subscription();
+  private user: User;
   constructor(public afAuth: AngularFireAuth,
               public afDB: AngularFirestore,
               public store: Store<AppState>,
@@ -31,11 +33,17 @@ export class AuthService {
   initAuth_Listener() {
     this.afAuth.authState.subscribe((fbUser: fire.User) => {
       if (fbUser) {
-        this.userSubs ?
-        this.afDB.doc(`${fbUser.uid}/usuario/`).valueChanges()
-          .subscribe( userObj => this.store.dispatch( new SetUserAction( new User(userObj) ) ) )
-        :
+        if (this.userSubs) {
+          this.afDB.doc(`${fbUser.uid}/usuario/`).valueChanges()
+            .subscribe( userObj => {
+              const usuarioDB = new User(userObj);
+              this.store.dispatch( new SetUserAction( usuarioDB ));
+              this.user = usuarioDB;
+            }  );
+        } else {
+          this.user = null;
           this.userSubs.unsubscribe();
+        }
       }
     });
   }
@@ -91,5 +99,9 @@ export class AuthService {
         return fbUser != null;
       })
     );
+  }
+
+  getUser() {
+    return {...this.user};
   }
 }

@@ -1,13 +1,16 @@
-import * as uiRedux from './shared/ui.reducer';
-import * as authRedux from './auth/auth.reducer';
-import { ActionReducerMap } from '../../node_modules/@ngrx/store';
+import * as fromUiRedux from './shared/ui.reducer';
+import * as fromAuthRedux from './auth/auth.reducer';
+import * as fromInEgrRedux from './ingreso-egreso/ingreso-egreso.reducer';
+import { ActionReducerMap } from '@ngrx/store';
 
 export interface AppState {
-    ui: uiRedux.State;
-    auth: authRedux.AuthState;
+    ui: fromUiRedux.State;
+    auth: fromAuthRedux.AuthState;
+    inEgr: fromInEgrRedux.IngresoEgresoState;
 }
 
 export const appReducers: ActionReducerMap<AppState> = {
-    ui: uiRedux.uiReducer,
-    auth: authRedux.authReducer
+    ui: fromUiRedux.uiReducer,
+    auth: fromAuthRedux.authReducer,
+    inEgr: fromInEgrRedux.ingresoEgresoReducer
 };
