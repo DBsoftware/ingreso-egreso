@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AuthService } from '../../auth/auth.service';
 import { Store } from '@ngrx/store';
 import { AppState } from '../../app.reducer';
-import { Subscription } from '../../../../node_modules/rxjs';
+import { Subscription } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { IngresoEgresoService } from '../../ingreso-egreso/ingreso-egreso.service';
 
@@ -28,7 +28,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   this.sub.unsubscribe();
   }
 
-  logOut(){
+  logOut() {
     this.authService.logOut();
     this.ingresoEgresoService.cancelarSubs();
   }

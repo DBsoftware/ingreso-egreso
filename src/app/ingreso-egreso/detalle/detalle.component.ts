@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Store } from '@ngrx/store';
-import { AppState } from '../../app.reducer';
+import { AppState } from '../ingreso-egreso.reducer';
 import { IngresoEgresoModel } from '../ingreso-egreso.model';
 import { filter } from 'rxjs/operators';
 import { Subscription } from 'rxjs';

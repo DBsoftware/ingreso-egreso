@@ -1,13 +1,18 @@
+import { AppState } from '../app.reducer';
 import * as InEgrAct from './ingreso-egreso.action';
 import { IngresoEgresoModel } from './ingreso-egreso.model';
 
 export interface IngresoEgresoState {
     items: IngresoEgresoModel[];
 }
+export interface AppState extends AppState {
+    inEgr: IngresoEgresoState;
+}
 
 export const initState: IngresoEgresoState = {
     items: []
 };
+
 
 export function ingresoEgresoReducer(state: IngresoEgresoState = initState, action: InEgrAct.acciones): IngresoEgresoState {
 
